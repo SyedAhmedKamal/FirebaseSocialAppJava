@@ -68,7 +68,7 @@ public class SignUpActivity extends AppCompatActivity {
                                     if (task.isSuccessful()) {
 
                                         User userProfile = new User(name, email, password, email, phoneNo);
-                                        databaseReference.child("Users").child(task.getResult().getUser().getUid()).setValue(userProfile);
+                                        databaseReference.child("Users").child(task.getResult().getUser().getUid()).child("UserProfile").setValue(userProfile);
 
                                         Toast.makeText(SignUpActivity.this, "Successfully registered", Toast.LENGTH_SHORT).show();
                                         startActivity(new Intent(SignUpActivity.this, HomeActivity.class));
