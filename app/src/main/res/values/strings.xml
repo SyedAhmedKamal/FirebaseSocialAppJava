@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Firebase social app - Java</string>
+    <string name="signup">Sign\n Up</string>
+</resources>
