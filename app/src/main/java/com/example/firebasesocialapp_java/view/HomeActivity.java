@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.firebasesocialapp_java.databinding.ActivityHomeBinding;
+import com.example.firebasesocialapp_java.model.Post;
 import com.example.firebasesocialapp_java.model.ProfileImage;
 import com.example.firebasesocialapp_java.model.User;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -44,6 +45,9 @@ public class HomeActivity extends AppCompatActivity {
     private ActivityResultLauncher<String> activityResultLauncher;
     private StorageReference storageReference;
     protected Uri imgUri;
+    private static String author;
+    private static String userId;
+    private static String imgUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +56,8 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         getImageUri();
+        createNewPost();
+        //loadProfileImage();
 
         auth = FirebaseAuth.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -69,6 +75,8 @@ public class HomeActivity extends AppCompatActivity {
                                     + user.getPhoneNumber()
 
                     );
+
+                    loadProfileImage();
 
 
                 }
@@ -96,11 +104,102 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        databaseReference.child("Users").child(auth.getUid()).child("UserProfile").child("ProfileImage")
+        binding.postBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                activityResultLauncher.launch("image/*");
+            }
+        });
+
+
+    }
+
+    private void createNewPost() {
+
+        activityResultLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), new ActivityResultCallback<Uri>() {
+            @Override
+            public void onActivityResult(Uri uri) {
+
+                if (uri != null) {
+                    imgUri = uri;
+                    newPost();
+                } else {
+                    Toast.makeText(HomeActivity.this, "No image select", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+    }
+
+    private void newPost() {
+
+        StorageReference postImgStorage = FirebaseStorage
+                .getInstance()
+                .getReference(auth.getCurrentUser().getUid())
+                .child("Posts")
+                .child(System.currentTimeMillis() + "." + getImageExtension(imgUri));
+
+
+        databaseReference.child("Users").child(auth.getUid()).child("UserProfile")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        User user = snapshot.getValue(User.class);
+                        if (user != null) {
+                            author = user.getName();
+                            userId = databaseReference.child("Users").child(auth.getUid()).toString();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                    }
+                });
+
+        postImgStorage.putFile(imgUri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+
+                        taskSnapshot.getStorage().getDownloadUrl()
+                                .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        Post newPost = new Post(
+                                                String.valueOf(System.currentTimeMillis()),
+                                                author,
+                                                userId,
+                                                uri.toString(),
+                                                0
+                                        );
+                                        databaseReference
+                                                .child("Users")
+                                                .child(auth.getUid())
+                                                .child("Posts")
+                                                .setValue(newPost);
+                                        Toast.makeText(HomeActivity.this, "Post created", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.i(TAG, "onFailure: POST uploading failed" + e.getMessage());
+                    }
+                });
+
+    }
+
+    // Load image from firebase storage via real time db
+    private void loadProfileImage() {
+        databaseReference.child("Users").child(auth.getCurrentUser().getUid()).child("UserProfile").child("ProfileImage")
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot profileImageSnapshot) {
-                        Log.i(TAG, "onDataChange: "+profileImageSnapshot.getValue());
+                        Log.i(TAG, "onDataChange: " + profileImageSnapshot.getValue());
                         ProfileImage profileImage = profileImageSnapshot.getValue(ProfileImage.class);
                         Glide.with(HomeActivity.this).load(profileImage.getImageUrl()).into(binding.profileImage);
                     }
@@ -110,7 +209,6 @@ public class HomeActivity extends AppCompatActivity {
 
                     }
                 });
-
     }
 
     private void getImageUri() {
@@ -136,8 +234,11 @@ public class HomeActivity extends AppCompatActivity {
 
     private void uploadProfileImg() {
         if (imgUri != null) {
-            StorageReference profileImageRef = storageReference.child(System.currentTimeMillis() + "." + getImageExtension(imgUri));
-            profileImageRef.putFile(imgUri)
+            StorageReference profileImageRef = storageReference
+                    .child(System.currentTimeMillis() + "." + getImageExtension(imgUri));
+
+            profileImageRef
+                    .putFile(imgUri)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -149,7 +250,7 @@ public class HomeActivity extends AppCompatActivity {
                                             ProfileImage pi = new ProfileImage(uri.toString(), "profile mage");
                                             databaseReference.child("Users").child(auth.getUid()).child("UserProfile").child("ProfileImage")
                                                     .setValue(pi);
-                                            Log.e(TAG, "onSuccess: "+uri);
+                                            Log.e(TAG, "onSuccess: " + uri);
                                         }
                                     });
 
@@ -158,7 +259,7 @@ public class HomeActivity extends AppCompatActivity {
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Log.e(TAG, "onFailure: "+e.getMessage() );
+                            Log.e(TAG, "onFailure: " + e.getMessage());
                         }
                     })
                     .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
