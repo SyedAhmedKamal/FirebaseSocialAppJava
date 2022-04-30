@@ -111,6 +111,13 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+        binding.myPosts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(HomeActivity.this, UserPostActivity.class));
+                finish();
+            }
+        });
 
     }
 
