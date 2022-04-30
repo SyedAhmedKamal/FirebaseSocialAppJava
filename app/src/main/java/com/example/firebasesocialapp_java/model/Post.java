@@ -8,17 +8,19 @@ public class Post {
     String imageUrl;
     String description;// nullable
     int likes = 0;
+    String postId;
 
     public Post() {
     }
 
     // without description
-    public Post(String timeStamp, String author, String uid, String imageUrl, int likes) {
+    public Post(String timeStamp, String author, String uid, String imageUrl, int likes, String postId) {
         this.timeStamp = timeStamp;
         this.author = author;
         this.uid = uid;
         this.imageUrl = imageUrl;
         this.likes = likes;
+        this.postId = postId;
     }
 
     public Post(String timeStamp, String author, String uid, String imageUrl, String description, int likes) {
@@ -52,5 +54,9 @@ public class Post {
 
     public int getLikes() {
         return likes;
+    }
+
+    public String getPostId() {
+        return postId;
     }
 }

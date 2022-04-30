@@ -47,7 +47,7 @@ public class HomeActivity extends AppCompatActivity {
     protected Uri imgUri;
     private static String author;
     private static String userId;
-    private static String imgUrl;
+    private static String postId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,7 +147,7 @@ public class HomeActivity extends AppCompatActivity {
                         User user = snapshot.getValue(User.class);
                         if (user != null) {
                             author = user.getName();
-                            userId = databaseReference.child("Users").child(auth.getUid()).toString();
+                            userId = auth.getCurrentUser().getUid();
                         }
                     }
 
@@ -161,6 +161,7 @@ public class HomeActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
+                        postId = databaseReference.push().getKey();
 
                         taskSnapshot.getStorage().getDownloadUrl()
                                 .addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -171,12 +172,14 @@ public class HomeActivity extends AppCompatActivity {
                                                 author,
                                                 userId,
                                                 uri.toString(),
-                                                0
+                                                0,
+                                                postId
                                         );
                                         databaseReference
                                                 .child("Users")
                                                 .child(auth.getUid())
                                                 .child("Posts")
+                                                .child(postId)
                                                 .setValue(newPost);
                                         Toast.makeText(HomeActivity.this, "Post created", Toast.LENGTH_SHORT).show();
                                     }

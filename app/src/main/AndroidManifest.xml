@@ -10,6 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FirebaseSocialAppJava">
         <activity
+            android:name=".view.UserPostActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.HomeActivity"
             android:exported="false" />
         <activity
