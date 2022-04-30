@@ -119,6 +119,14 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+        binding.searchAccountBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(HomeActivity.this, SearchAccountActivity.class));
+                finish();
+            }
+        });
+
     }
 
     private void createNewPost() {

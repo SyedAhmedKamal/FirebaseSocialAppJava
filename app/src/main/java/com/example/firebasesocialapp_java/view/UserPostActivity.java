@@ -47,7 +47,7 @@ public class UserPostActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         Log.d(TAG, "onDataChange: "+snapshot.getChildren());
-                        for (DataSnapshot postSnapshot: snapshot.getChildren()) {
+                            for (DataSnapshot postSnapshot: snapshot.getChildren()) {
                             Log.d(TAG, "Posts: "+postSnapshot.getValue().toString());
                             Post post = postSnapshot.getValue(Post.class);
                             postArrayList.add(post);
