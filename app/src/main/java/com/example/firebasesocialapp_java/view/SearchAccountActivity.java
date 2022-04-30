@@ -39,67 +39,69 @@ public class SearchAccountActivity extends AppCompatActivity {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         usersList = new ArrayList<>();
 
-        databaseReference.child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Log.i(TAG, "onDataChange: User - " + snapshot.getKey());
-                for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                    Log.i(TAG, "onDataChange: User - " + userSnapshot.getKey());// getting uid
-                    Log.i(TAG, "onDataChange: User - " + userSnapshot.getValue());
-                    uid = userSnapshot.getKey();
+        databaseReference
+                .child("Users")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Log.i(TAG, "onDataChange: User - " + snapshot.getKey());
+                        for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                            Log.i(TAG, "onDataChange: User - " + userSnapshot.getKey());// getting uid
+                            Log.i(TAG, "onDataChange: User - " + userSnapshot.getValue());
+                            uid = userSnapshot.getKey();
 
-                    if (uid != null) {
+                            if (uid != null) {
 
-                        databaseReference
-                                .child("Users")
-                                .child(uid)
-                                .child("UserProfile")
-                                .child("name")
-                                .addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        name = String.valueOf(snapshot.getValue());
-                                        Log.i(TAG, "onDataChange: NAME - " + name);
-                                    }
+                                databaseReference
+                                        .child("Users")
+                                        .child(uid)
+                                        .child("UserProfile")
+                                        .child("name")
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                name = String.valueOf(snapshot.getValue());
+                                                Log.i(TAG, "onDataChange: NAME - " + name);
+                                            }
 
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-                                    }
-                                });
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+                                            }
+                                        });
 
-                        databaseReference
-                                .child("Users")
-                                .child(uid)
-                                .child("UserProfile")
-                                .child("ProfileImage")
-                                .child("imageUrl")
-                                .addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        imageUrl = String.valueOf(snapshot.getValue());
-                                        Log.i(TAG, "onDataChange: " + imageUrl);
+                                databaseReference
+                                        .child("Users")
+                                        .child(uid)
+                                        .child("UserProfile")
+                                        .child("ProfileImage")
+                                        .child("imageUrl")
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                imageUrl = String.valueOf(snapshot.getValue());
+                                                Log.i(TAG, "onDataChange: " + imageUrl);
 
-                                        SearchAccountModel user = new SearchAccountModel(uid, imageUrl, name);
-                                        usersList.add(user);
-                                        adapter = new SearchedAccountAdapter(usersList, SearchAccountActivity.this);
-                                        binding.accRecyclerView.setAdapter(adapter);
+                                                SearchAccountModel user = new SearchAccountModel(uid, imageUrl, name);
+                                                usersList.add(user);
+                                                adapter = new SearchedAccountAdapter(usersList, SearchAccountActivity.this);
+                                                binding.accRecyclerView.setAdapter(adapter);
 
-                                    }
+                                            }
 
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-                                    }
-                                });
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+                                            }
+                                        });
 
+                            }
+                        }
                     }
-                }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e(TAG, "onCancelled: " + error.getMessage());
-            }
-        });
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e(TAG, "onCancelled: " + error.getMessage());
+                    }
+                });
 
     }
 }
