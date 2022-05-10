@@ -127,6 +127,15 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+        // goto video upload screen
+        binding.videoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(HomeActivity.this, UploadVideoActivityTEST.class));
+                finish();
+            }
+        });
+
     }
 
     private void createNewPost() {
