@@ -32,6 +32,10 @@ public class Post {
         this.likes = likes;
     }
 
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     public String getTimeStamp() {
         return timeStamp;
     }

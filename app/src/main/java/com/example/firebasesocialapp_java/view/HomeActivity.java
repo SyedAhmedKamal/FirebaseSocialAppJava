@@ -227,8 +227,13 @@ public class HomeActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot profileImageSnapshot) {
                         Log.i(TAG, "onDataChange: " + profileImageSnapshot.getValue());
-                        ProfileImage profileImage = profileImageSnapshot.getValue(ProfileImage.class);
-                        Glide.with(HomeActivity.this).load(profileImage.getImageUrl()).into(binding.profileImage);
+                        if (profileImageSnapshot.exists()){
+                            ProfileImage profileImage = profileImageSnapshot.getValue(ProfileImage.class);
+                            Glide.with(getApplicationContext()).load(profileImage.getImageUrl()).into(binding.profileImage);
+                        }
+                        else{
+                            Log.e(TAG, "onDataChange: Profile image in not set" );
+                        }
                     }
 
                     @Override

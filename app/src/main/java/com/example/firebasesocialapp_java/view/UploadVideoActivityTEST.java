@@ -153,7 +153,6 @@ public class UploadVideoActivityTEST extends AppCompatActivity {
                             Log.i(TAG, "onFailure: POST uploading failed" + e.getMessage());
                         }
                     });
-
         }
     }
 }
