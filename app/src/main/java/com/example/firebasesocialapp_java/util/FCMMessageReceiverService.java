@@ -69,6 +69,7 @@ public class FCMMessageReceiverService extends FirebaseMessagingService {
     public void onDeletedMessages() {
         super.onDeletedMessages();
         Log.d(TAG, "onDeletedMessages: called");
+        // request for full sync from server
     }
 
     @Override

@@ -16,4 +16,26 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:layout_margin="8dp"
+        android:backgroundTint="@android:color/darker_gray"
+        android:id="@+id/subBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Subscribe"
+        app:layout_constraintBottom_toTopOf="@+id/unSubBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:backgroundTint="@android:color/holo_red_light"
+        android:layout_margin="8dp"
+        android:id="@+id/unSubBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Unsubscribe"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/subBtn"
+        app:layout_constraintStart_toStartOf="@+id/subBtn" />
 </androidx.constraintlayout.widget.ConstraintLayout>
