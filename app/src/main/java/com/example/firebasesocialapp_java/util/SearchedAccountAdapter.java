@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,22 +21,25 @@ public class SearchedAccountAdapter extends RecyclerView.Adapter<SearchedAccount
 
     ArrayList<SearchAccountModel> accountList;
     Context context;
+    SearchedUserClickListener listener;
 
-    public SearchedAccountAdapter(ArrayList<SearchAccountModel> accountList, Context context) {
+    public SearchedAccountAdapter(ArrayList<SearchAccountModel> accountList, SearchedUserClickListener listener) {
         this.accountList = accountList;
-        this.context = context;
+        this.listener = listener;
     }
 
     public static class MyViewHolderSearch extends RecyclerView.ViewHolder {
 
         TextView userName;
         ImageView userImage;
+        LinearLayout searchLayout;
 
         public MyViewHolderSearch(@NonNull View itemView) {
             super(itemView);
 
             userName = itemView.findViewById(R.id.user_name);
             userImage = itemView.findViewById(R.id.user_profile_image);
+            searchLayout = itemView.findViewById(R.id.user_profile_layout);
         }
     }
 
@@ -43,15 +47,24 @@ public class SearchedAccountAdapter extends RecyclerView.Adapter<SearchedAccount
     @NonNull
     @Override
     public MyViewHolderSearch onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new MyViewHolderSearch(LayoutInflater.from(context).inflate(R.layout.searched_account_layout, parent, false));
+        return new MyViewHolderSearch(
+                LayoutInflater.from(parent.getContext()).inflate(
+                        R.layout.searched_account_layout,
+                        parent,
+                        false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolderSearch holder, int position) {
 
-        holder.userName.setText(accountList.get(position).getName());
+        holder.userName.setText(accountList.get(position).getUid());
         Glide.with(holder.itemView).load(accountList.get(position).getImageUrl()).into(holder.userImage);
 
+        holder.searchLayout.setOnClickListener(view -> {
+
+            listener.onUserProfileClicked(position);
+
+        });
     }
 
     @Override

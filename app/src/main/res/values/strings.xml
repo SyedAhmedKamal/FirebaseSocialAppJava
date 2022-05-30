@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">Firebase social app - Java</string>
     <string name="signup">Sign\n Up</string>
+    <string name="we_will_send_one_time_password_on_this_mobile_number">We will send one time password on this mobile number</string>
+    <string name="enter_mobile_number">Enter Mobile Number</string>
+    <string name="_92">+92-</string>
+    <string name="_1234567890">1234567890</string>
+    <string name="get_otp">Get Otp</string>
+    <string name="verify">Verify</string>
 </resources>

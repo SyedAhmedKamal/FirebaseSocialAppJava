@@ -136,6 +136,11 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+        binding.forgetPasswordBtn.setOnClickListener(view -> {
+            startActivity(new Intent(HomeActivity.this, SendOTPActivity.class));
+            finish();
+        });
+
     }
 
     private void createNewPost() {
@@ -227,12 +232,11 @@ public class HomeActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot profileImageSnapshot) {
                         Log.i(TAG, "onDataChange: " + profileImageSnapshot.getValue());
-                        if (profileImageSnapshot.exists()){
+                        if (profileImageSnapshot.exists()) {
                             ProfileImage profileImage = profileImageSnapshot.getValue(ProfileImage.class);
                             Glide.with(getApplicationContext()).load(profileImage.getImageUrl()).into(binding.profileImage);
-                        }
-                        else{
-                            Log.e(TAG, "onDataChange: Profile image in not set" );
+                        } else {
+                            Log.e(TAG, "onDataChange: Profile image in not set");
                         }
                     }
 
@@ -279,7 +283,7 @@ public class HomeActivity extends AppCompatActivity {
                                     .addOnSuccessListener(new OnSuccessListener<Uri>() {
                                         @Override
                                         public void onSuccess(Uri uri) {
-                                            ProfileImage pi = new ProfileImage(uri.toString(), "profile mage");
+                                            ProfileImage pi = new ProfileImage(uri.toString(), auth.getUid());
                                             databaseReference.child("Users").child(auth.getUid()).child("UserProfile").child("ProfileImage")
                                                     .setValue(pi);
                                             Log.e(TAG, "onSuccess: " + uri);
