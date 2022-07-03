@@ -3,6 +3,8 @@
     package="com.example.firebasesocialapp_java">
 
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <application
         android:name=".util.App"
         android:allowBackup="true"
@@ -61,6 +63,8 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
+
+        <service android:name=".services.UploadImageService" />
     </application>
 
 </manifest>

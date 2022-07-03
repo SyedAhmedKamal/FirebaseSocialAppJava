@@ -5,9 +5,11 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.style.TabStopSpan;
@@ -17,10 +19,13 @@ import android.widget.Toast;
 
 import com.example.firebasesocialapp_java.databinding.ActivityUserPostBinding;
 import com.example.firebasesocialapp_java.model.Post;
+import com.example.firebasesocialapp_java.services.UploadImageService;
 import com.example.firebasesocialapp_java.util.ItemClickInterface;
 import com.example.firebasesocialapp_java.util.UserPostAdapter;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,6 +33,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -45,6 +51,7 @@ public class UserPostActivity extends AppCompatActivity implements ItemClickInte
     int position;
 
     private ActivityResultLauncher<String> activityResultLauncher;
+    private ActivityResultLauncher<String> activityImageUpload;
     private Uri updateImgUri;
 
     @Override
@@ -54,6 +61,7 @@ public class UserPostActivity extends AppCompatActivity implements ItemClickInte
         setContentView(binding.getRoot());
 
         getUpdateImg();
+
 
         auth = FirebaseAuth.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -88,7 +96,7 @@ public class UserPostActivity extends AppCompatActivity implements ItemClickInte
                                 binding.recyclerView.setAdapter(adapter);
                             }
 
-                            if (postArrayList.size() == 0){
+                            if (postArrayList.size() == 0) {
                                 Toast.makeText(UserPostActivity.this, "No posts", Toast.LENGTH_SHORT).show();
                             }
 
@@ -107,17 +115,18 @@ public class UserPostActivity extends AppCompatActivity implements ItemClickInte
 
     }
 
+
+
     private void getUpdateImg() {
 
         activityResultLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), new ActivityResultCallback<Uri>() {
             @Override
             public void onActivityResult(Uri imgUri) {
 
-                if (imgUri!=null){
+                if (imgUri != null) {
                     updateImgUri = imgUri;
                     upadte();
-                }
-                else{
+                } else {
                     Toast.makeText(UserPostActivity.this, "No image selected", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -149,14 +158,14 @@ public class UserPostActivity extends AppCompatActivity implements ItemClickInte
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
                                                     public void onSuccess(Void unused) {
-                                                        Toast.makeText(UserPostActivity.this, "Updated post "+postToUpdate.getPostId(), Toast.LENGTH_SHORT).show();
+                                                        Toast.makeText(UserPostActivity.this, "Updated post " + postToUpdate.getPostId(), Toast.LENGTH_SHORT).show();
                                                     }
                                                 })
                                                 .addOnFailureListener(new OnFailureListener() {
                                                     @Override
                                                     public void onFailure(@NonNull Exception e) {
                                                         Toast.makeText(UserPostActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                                                        Log.e(TAG, "onFailure: update DB"+e.getMessage() );
+                                                        Log.e(TAG, "onFailure: update DB" + e.getMessage());
                                                     }
                                                 });
                                     }
@@ -164,7 +173,7 @@ public class UserPostActivity extends AppCompatActivity implements ItemClickInte
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-                                        Log.e(TAG, "onFailure: UrlDownload "+e.getMessage());
+                                        Log.e(TAG, "onFailure: UrlDownload " + e.getMessage());
                                     }
                                 });
                     }
@@ -173,7 +182,7 @@ public class UserPostActivity extends AppCompatActivity implements ItemClickInte
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(UserPostActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                        Log.e(TAG, "onFailure: "+e.getMessage());
+                        Log.e(TAG, "onFailure: " + e.getMessage());
                     }
                 });
 

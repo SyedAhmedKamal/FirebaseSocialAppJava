@@ -4,11 +4,13 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.security.keystore.StrongBoxUnavailableException;
 import android.util.Log;
@@ -21,6 +23,7 @@ import com.example.firebasesocialapp_java.databinding.ActivityHomeBinding;
 import com.example.firebasesocialapp_java.model.Post;
 import com.example.firebasesocialapp_java.model.ProfileImage;
 import com.example.firebasesocialapp_java.model.User;
+import com.example.firebasesocialapp_java.services.UploadImageService;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -49,6 +52,8 @@ public class HomeActivity extends AppCompatActivity {
     private static String userId;
     private static String postId;
 
+    ActivityResultLauncher<String> activityImageUpload;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +62,7 @@ public class HomeActivity extends AppCompatActivity {
 
         getImageUri();
         createNewPost();
+        uploadImageService();
         //loadProfileImage();
 
         auth = FirebaseAuth.getInstance();
@@ -140,6 +146,31 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(new Intent(HomeActivity.this, SendOTPActivity.class));
             finish();
         });
+
+        binding.serviceBtn.setOnClickListener(view -> {
+            activityImageUpload.launch("image/*");
+        });
+
+    }
+
+    private void uploadImageService() {
+        activityImageUpload = registerForActivityResult(new ActivityResultContracts.GetContent(), new ActivityResultCallback<Uri>() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onActivityResult(Uri imageUri) {
+                if (imageUri != null) {
+                    uploadImageInBackground(imageUri);
+                }
+            }
+        });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void uploadImageInBackground(Uri imageUri) {
+
+        Intent intent = new Intent(HomeActivity.this, UploadImageService.class);
+        intent.putExtra("uri", imageUri.toString());
+        startForegroundService(intent);
 
     }
 
@@ -308,6 +339,5 @@ public class HomeActivity extends AppCompatActivity {
             Toast.makeText(this, "No file selected", Toast.LENGTH_SHORT).show();
         }
     }
-
 
 }
